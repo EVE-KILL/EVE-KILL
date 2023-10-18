@@ -1,0 +1,10 @@
+resources/cache/
+resources/containers/
+resources/*.gz
+rr
+
+.vscode/settings.json
+.env
+.DS_Store
+
+vendor/

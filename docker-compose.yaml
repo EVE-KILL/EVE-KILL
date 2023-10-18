@@ -1,0 +1,31 @@
+version: "3.2"
+
+networks:
+  internet:
+    external: true
+
+services:
+  redis:
+    image: library/redis
+    container_name: redis
+    volumes:
+      - ./resources/containers/redis:/data
+    ports:
+      - 127.0.0.1:6379:6379
+    networks:
+      - internet
+    restart: unless-stopped
+
+  mongodb:
+    labels:
+      - "traefik.enable=false"
+    image: library/mongo
+    container_name: mongodb
+    volumes:
+      - ./resources/containers/mongo:/data/db
+    ports:
+      - 127.0.0.1:27017:27017
+    networks:
+      - internet
+    command: ["--directoryperdb"]
+    restart: unless-stopped

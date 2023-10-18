@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+use EK\Console\Console;
+
+[$bootstrap, $autoloader] = require __DIR__ . '/../app/init.php';
+
+$console = new Console(
+    $bootstrap->getContainer(),
+    $autoloader,
+    commandsNamespace: 'EK\Commands',
+    consoleName: 'EK',
+    version: '1.0.0'
+);
+
+// Run the console
+$console->run();

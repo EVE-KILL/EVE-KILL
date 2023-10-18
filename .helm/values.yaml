@@ -1,0 +1,119 @@
+namespace: evekill
+imagePullPolicy: IfNotPresent
+
+env:
+
+ingress:
+  clusterIssuer: letsencrypt
+  ingressClass: nginx
+  hostname: eve-kill.com
+  tls:
+    secretName: evekill-tls
+
+imageCredentials:
+  - registry:
+    username:
+    password:
+    email:
+
+serviceAccount:
+  create: true
+  name: evekill
+  annotations: {}
+
+roadrunner:
+  image:
+  version:
+  replicas: 1
+  hpa:
+    minReplicas: 1
+    maxReplicas: 1
+    averageUtilization: 80 # The amount of CPU that the deployment should be using, before it is scaled up.
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  resources:
+    limits:
+      enabled: false
+      cpu: 4000m
+      memory: 2048Mi
+    requests:
+      enabled: true
+      cpu: 1000m
+      memory: 1024Mi
+
+queue:
+  image:
+  version: 8.2
+  replicas: 1
+  hpa:
+    minReplicas: 1
+    maxReplicas: 1
+    averageUtilization: 80 # The amount of CPU that the deployment should be using, before it is scaled up.
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  resources:
+    limits:
+      enabled: false
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      enabled: true
+      cpu: 500m
+      memory: 512Mi
+
+cronjob:
+  image:
+  version:
+  schedule: "* * * * *"
+  restartPolicy: Never
+  startingDeadlineSeconds: 100
+  concurrencyPolicy: Replace
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  resources:
+    limits:
+      enabled: false
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      enabled: true
+      cpu: 500m
+      memory: 512Mi
+
+redis:
+  enabled: false
+  resources:
+    limits:
+      enabled: false
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      enabled: true
+      cpu: 500m
+      memory: 512Mi
+
+mongodb:
+  enabled: false
+  resources:
+    limits:
+      enabled: false
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      enabled: true
+      cpu: 500m
+      memory: 512Mi
+
+rabbitmq:
+  enabled: false
+  resources:
+    limits:
+      enabled: false
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      enabled: true
+      cpu: 500m
+      memory: 512Mi

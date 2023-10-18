@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php
+
+use EK\Http\Console\Console;
+
+// Enable garbage collection since this will run for a while
+gc_enable();
+
+/** @var \EK\Bootstrap $bootstrap */
+/** @var \Composer\Autoload\ClassLoader $autoloader */
+[$bootstrap, $autoloader] = require __DIR__ . '/../app/init.php';
+
+// Get the container
+/** @var \League\Container\Container */
+$container = $bootstrap->getContainer();
+
+// Init the RoadRunnerConsole helper
+/** @var EK\RoadRunner\Console\Console $roadRunnerConsole */
+$roadRunnerConsole = $container->get(Console::class);
+
+// Load the .env file using dotenv
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
+switch ($_SERVER['RR_MODE']) {
+    case 'jobs':
+        $roadRunnerConsole->initJobs($container);
+        break;
+    case 'http':
+        $roadRunnerConsole->initWeb($container, $autoloader);
+        break;
+    default:
+        throw new \Exception('Unknown RR_MODE');
+}

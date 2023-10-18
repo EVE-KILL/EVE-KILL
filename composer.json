@@ -1,0 +1,51 @@
+{
+    "name": "karbowiak/evekill",
+    "description": "Killboard for EVE-Online",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Karbowiak",
+            "email": "michael@karbowiak.dk"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.2",
+        "ext-redis": "*",
+        "ext-igbinary": "*",
+        "ext-mongodb": "*",
+        "symfony/console": "*",
+        "kcs/class-finder": "*",
+        "predis/predis": "*",
+        "poliander/cron": "*",
+        "mongodb/mongodb": "*",
+        "illuminate/collections": "*",
+        "nyholm/psr7": "*",
+        "slim/slim": "*",
+        "twig/twig": "*",
+        "zeuxisoo/slim-whoops": "*",
+        "league/container": "*",
+        "psy/psysh": "*",
+        "monolog/monolog": "*",
+        "vlucas/phpdotenv": "*",
+        "spiral/roadrunner": "*",
+        "spiral/roadrunner-jobs": "*",
+        "spiral/roadrunner-cli": "*",
+        "spiral/roadrunner-http": "*"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "*",
+        "squizlabs/php_codesniffer": "*",
+        "micheh/phpcs-gitlab": "*",
+        "codeception/codeception": "*",
+        "codeception/module-asserts": "*",
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "EK\\": "app/"
+        }
+    }
+}
