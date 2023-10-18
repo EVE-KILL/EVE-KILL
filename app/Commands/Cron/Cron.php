@@ -1,6 +1,6 @@
 <?php
 
-namespace EK\Commands;
+namespace EK\Commands\Cron;
 
 use EK\Console\Api\ConsoleCommand;
 use Kcs\ClassFinder\Finder\ComposerFinder;

@@ -1,6 +1,6 @@
 <?php
 
-namespace EK\Commands;
+namespace EK\Commands\Updates;
 
 use EK\Console\Api\ConsoleCommand;
 use EK\Models\Config;

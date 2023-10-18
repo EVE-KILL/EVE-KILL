@@ -1,6 +1,6 @@
 <?php
 
-namespace EK\Commands\Fetch;
+namespace EK\Commands\Killmails;
 
 use Composer\Autoload\ClassLoader;
 use EK\Console\Api\ConsoleCommand;

@@ -1,6 +1,6 @@
 <?php
 
-namespace EK\Commands;
+namespace EK\Commands\Routes;
 
 use Composer\Autoload\ClassLoader;
 use EK\Console\Api\ConsoleCommand;
