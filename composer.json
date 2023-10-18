@@ -34,7 +34,8 @@
         "spiral/roadrunner-jobs": "*",
         "spiral/roadrunner-cli": "*",
         "spiral/roadrunner-http": "*",
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "league/csv": "*"
     },
     "require-dev": {
         "symfony/var-dumper": "*",
