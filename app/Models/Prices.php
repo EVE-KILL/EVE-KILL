@@ -20,4 +20,12 @@ class Prices extends Collection
 
     /** @var string[] $required Fields required to insert data to model (ie. email, password hash, etc.) */
     public array $required = ['typeID', 'average', 'highest', 'lowest', 'regionID', 'date'];
+
+    /** @var string[] $indexes The fields that should be indexed */
+    public array $indexes = [
+        'unique' => [['typeID', 'date', 'regionID']],
+        'desc' => ['regionID'],
+        'asc' => [],
+        'text' => []
+    ];
 }

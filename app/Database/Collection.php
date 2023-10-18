@@ -30,6 +30,13 @@ class Collection implements CollectionInterface
     public array $hiddenFields = [];
     /** @var string[] $required Fields required to insert data to model (ie. email, password hash, etc.) */
     public array $required = [];
+    /** @var string[] $indexes The fields that should be indexed */
+    public array $indexes = [
+        'unique' => [],
+        'desc' => [],
+        'asc' => [],
+        'text' => []
+    ];
     /** @var \Illuminate\Support\Collection Data collection when storing data */
     protected IlluminateCollection $data;
     /** @var \MongoDB\Client MongoDB client connection */
@@ -192,6 +199,32 @@ class Collection implements CollectionInterface
         return true;
     }
 
+    public function handleIndexes(): void
+    {
+        foreach ($this->indexes as $indexType => $indexes) {
+            foreach ($indexes as $index) {
+                if (is_array($index)) {
+                    $modifier = ($indexType === 'desc') ? -1 : (($indexType === 'asc') ? 1 : (($indexType === 'unique') ? -1 : ($indexType === 'text' ? 'text' : null)));
+                    if ($modifier !== null) {
+                        $modifiedIndex = [];
+                        foreach ($index as $key) {
+                            $modifiedIndex[$key] = $modifier;
+                        }
+                        $options = ($indexType === 'unique') ? ['unique' => true] : [];
+                        $this->createIndex($modifiedIndex, $options);
+                    }
+                } else {
+                    $modifier = ($indexType === 'desc') ? -1 : (($indexType === 'asc') ? 1 : ($indexType === 'text' ? 'text' : null));
+                    if ($modifier !== null) {
+                        $this->createIndex([$index => $modifier], ($indexType === 'unique') ? ['unique' => true] : []);
+                    }
+                }
+            }
+        }
+
+
+    }
+
     public function createIndex(array $keys = [], array $options = []): void
     {
         $this->collection->createIndex($keys, $options);
@@ -211,4 +244,5 @@ class Collection implements CollectionInterface
     {
         return $this->collection->listIndexes()->toArray();
     }
+
 }
