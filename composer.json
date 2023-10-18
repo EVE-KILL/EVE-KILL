@@ -33,7 +33,8 @@
         "spiral/roadrunner": "*",
         "spiral/roadrunner-jobs": "*",
         "spiral/roadrunner-cli": "*",
-        "spiral/roadrunner-http": "*"
+        "spiral/roadrunner-http": "*",
+        "symfony/yaml": "*"
     },
     "require-dev": {
         "symfony/var-dumper": "*",

@@ -85,13 +85,13 @@ class Collection implements CollectionInterface
         return $this->collection->deleteOne($filter);
     }
 
-    public function update(array $filter = [], array $update = []): UpdateResult
+    public function update(array $filter = [], array $update = [], array $options = []): UpdateResult
     {
         if (empty($filter)) {
             throw new \Exception('Filter cannot be empty');
         }
 
-        return $this->collection->updateOne($filter, $update);
+        return $this->collection->updateOne($filter, $update, $options);
     }
 
     public function truncate(): void
@@ -175,15 +175,15 @@ class Collection implements CollectionInterface
     /**
      * @return true
      */
-    public function hasRequired(IlluminateCollection $data = null): bool
+    public function hasRequired(): bool
     {
         if (!empty($this->required)) {
             foreach ($this->required as $key) {
-                if ($data !== null && !$data->has($key)) {
-                    throw new Exception('Error: ' . $key . ' does not exist in data..');
+                if ($this->data !== null && !$this->data->has($key)) {
+                    throw new Exception('Error: ' . $key . ' does not exist in data..' . PHP_EOL . print_r($this->data->all(), true));
                 }
                 if (!$this->data->has($key)) {
-                    throw new Exception('Error: ' . $key . ' does not exist in data..');
+                    throw new Exception('Error: ' . $key . ' does not exist in data..' . PHP_EOL . print_r($this->data->all(), true));
                 }
             }
         }
