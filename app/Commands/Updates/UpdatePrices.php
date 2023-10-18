@@ -22,6 +22,9 @@ class UpdatePrices extends ConsoleCommand
             $this->historicData();
             exit(0);
         }
+
+        // @TODO
+        // Add fetching of the current "historic" price from the ESI API
     }
 
     protected function historicData(): void
@@ -61,11 +64,9 @@ class UpdatePrices extends ConsoleCommand
             exec("mkdir -p {$cachePath}/markethistory/{$year}");
 
             do {
-                // Make the currentDate the $startDate + $increments days already iterated
                 $currentDate = date('Y-m-d', strtotime($startDate . ' + ' . $increments . ' days'));
 
                 $this->out("Downloading {$currentDate}");
-                // https://data.everef.net/market-history/2022/market-history-2022-01-01.csv.bz2
                 exec("curl --progress-bar -o {$cachePath}/{$currentDate}.csv.bz2 {$baseUrl}/market-history-{$currentDate}.csv.bz2");
                 exec("bzip2 -d {$cachePath}/{$currentDate}.csv.bz2");
                 exec("mv {$cachePath}/{$currentDate}.csv {$cachePath}/markethistory/{$year}/{$currentDate}.csv");
