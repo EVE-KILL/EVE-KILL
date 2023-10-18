@@ -75,9 +75,9 @@ class FetchKillmails extends ConsoleCommand
 
                 $this->killmails->clear();
                 $this->killmails->setData([
-                    'killmail_id' => $killId,
+                    'killmail_id' => (int) $killId,
                     'hash' => $hash,
-                    'fetched' => false,
+                    'fetched' => (bool) false,
                 ]);
 
                 try {

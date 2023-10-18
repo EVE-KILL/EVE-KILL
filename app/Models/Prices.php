@@ -3,6 +3,8 @@
 namespace EK\Models;
 
 use EK\Database\Collection;
+use MongoDB\BSON\UTCDateTime;
+use RuntimeException;
 
 class Prices extends Collection
 {
@@ -28,4 +30,24 @@ class Prices extends Collection
         'asc' => [],
         'text' => []
     ];
+
+    public function getPriceByTypeId(int $typeId, string $date = null): \Illuminate\Support\Collection
+    {
+        $date = $date === null ? new UTCDateTime(time() * 1000) : new UTCDateTime(strtotime($date) * 1000);
+        $price = $this->findOne(['typeID' => $typeId, 'date' => $date]);
+
+        if ($price->isEmpty()) {
+            $price = collect($this->aggregate([
+                ['$match' => ['typeID' => $typeId]],
+                ['$sort' => ['date' => -1]],
+                ['$limit' => 1]
+            ])) ?? [];
+        }
+
+        if (empty($price)) {
+            throw new RuntimeException('No price found for typeID: ' . $typeId);
+        }
+
+        return $price;
+    }
 }

@@ -5,10 +5,14 @@ namespace EK\Commands\Updates;
 use EK\Console\Api\ConsoleCommand;
 use EK\Models\Prices;
 use League\Csv\Reader;
+use MongoDB\BSON\UTCDateTime;
 
 class UpdatePrices extends ConsoleCommand
 {
-    protected string $signature = 'update:prices { --historic : Gets _ALL_ Prices going back to 2016 from the Historic everef dataset }';
+    protected string $signature = 'update:prices
+        { --historic : Gets _ALL_ Prices going back to 2016 from the Historic everef dataset }
+        { --skipDownload : Skips downloading the historic data }
+    ';
     protected string $description = 'Updates the item prices';
 
     public function __construct(
@@ -46,36 +50,38 @@ class UpdatePrices extends ConsoleCommand
         $cachePath = \BASE_DIR . '/resources/cache';
 
         // Download and unpack the historic blobs
-        $this->out('<info>Downloading Historic Data</info>');
-        foreach ($historicDataBlobs as $year => $url) {
-            $this->out("Downloading {$year}");
-            exec("curl --progress-bar -o {$cachePath}/{$year}.tar.bz2 {$url}");
-            exec("mkdir -p {$cachePath}/markethistory/{$year}");
-            $this->out("Unpacking {$year}");
-            exec("tar -xjf {$cachePath}/{$year}.tar.bz2 -C {$cachePath}/markethistory/{$year}/");
-        }
+        if ($this->skipDownload === false) {
+            $this->out('<info>Downloading Historic Data</info>');
+            foreach ($historicDataBlobs as $year => $url) {
+                $this->out("Downloading {$year}");
+                exec("curl --progress-bar -o {$cachePath}/{$year}.tar.bz2 {$url}");
+                exec("mkdir -p {$cachePath}/markethistory/{$year}");
+                $this->out("Unpacking {$year}");
+                exec("tar -xjf {$cachePath}/{$year}.tar.bz2 -C {$cachePath}/markethistory/{$year}/");
+            }
 
-        // Download all the historic data by date into markethistory
-        $this->out('<info>Downloading Historic Data by Date</info>');
-        foreach ($historicHistoryByDay as $year => $baseUrl) {
-            $startDate = "{$year}-01-01";
-            $daysInAYear = 365;
-            $increments = 0;
-            exec("mkdir -p {$cachePath}/markethistory/{$year}");
+            // Download all the historic data by date into markethistory
+            $this->out('<info>Downloading Historic Data by Date</info>');
+            foreach ($historicHistoryByDay as $year => $baseUrl) {
+                $startDate = "{$year}-01-01";
+                $daysInAYear = 365;
+                $increments = 0;
+                exec("mkdir -p {$cachePath}/markethistory/{$year}");
 
-            do {
-                $currentDate = date('Y-m-d', strtotime($startDate . ' + ' . $increments . ' days'));
+                do {
+                    $currentDate = date('Y-m-d', strtotime($startDate . ' + ' . $increments . ' days'));
 
-                $this->out("Downloading {$currentDate}");
-                exec("curl --progress-bar -o {$cachePath}/{$currentDate}.csv.bz2 {$baseUrl}/market-history-{$currentDate}.csv.bz2");
-                exec("bzip2 -d {$cachePath}/{$currentDate}.csv.bz2");
-                exec("mv {$cachePath}/{$currentDate}.csv {$cachePath}/markethistory/{$year}/{$currentDate}.csv");
+                    $this->out("Downloading {$currentDate}");
+                    exec("curl --progress-bar -o {$cachePath}/{$currentDate}.csv.bz2 {$baseUrl}/market-history-{$currentDate}.csv.bz2");
+                    exec("bzip2 -d {$cachePath}/{$currentDate}.csv.bz2");
+                    exec("mv {$cachePath}/{$currentDate}.csv {$cachePath}/markethistory/{$year}/{$currentDate}.csv");
 
-                // If the $currentDate is the same as the actual current date('Y-m-d H:i:s') then we can stop
-                if ($currentDate === date('Y-m-d')) {
-                    break;
-                }
-            } while($increments++ < $daysInAYear);
+                    // If the $currentDate is the same as the actual current date('Y-m-d H:i:s') then we can stop
+                    if ($currentDate === date('Y-m-d')) {
+                        break;
+                    }
+                } while($increments++ < $daysInAYear);
+            }
         }
 
         // Now that it's all downloaded, we can import it
@@ -94,15 +100,19 @@ class UpdatePrices extends ConsoleCommand
                 $bigInsert = [];
                 foreach($records as $record) {
                     $bigInsert[] = [
-                        'typeID' => $record['type_id'],
-                        'average' => $record['average'],
-                        'highest' => $record['highest'],
-                        'lowest' => $record['lowest'],
-                        'regionID' => $record['region_id'],
-                        'date' => $record['date']
+                        'typeID' => (int) $record['type_id'],
+                        'average' => (float) $record['average'],
+                        'highest' => (float) $record['highest'],
+                        'lowest' => (float) $record['lowest'],
+                        'regionID' => (int) $record['region_id'],
+                        'date' => new UTCDateTime(strtotime($record['date']) * 1000)
                     ];
                 }
-                $this->prices->collection->insertMany($bigInsert);
+                try {
+                    $this->prices->collection->insertMany($bigInsert);
+                } catch (\Exception $e) {
+                    $this->out('Error: ' . $e->getMessage());
+                }
             }
         }
     }
