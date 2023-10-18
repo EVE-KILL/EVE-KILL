@@ -214,7 +214,7 @@ class Collection implements CollectionInterface
                         $this->createIndex($modifiedIndex, $options);
                     }
                 } else {
-                    $modifier = ($indexType === 'desc') ? -1 : (($indexType === 'asc') ? 1 : ($indexType === 'text' ? 'text' : null));
+                    $modifier = ($indexType === 'desc') ? -1 : (($indexType === 'asc') ? 1 : (($indexType === 'unique') ? -1 : ($indexType === 'text' ? 'text' : null)));
                     if ($modifier !== null) {
                         $this->createIndex([$index => $modifier], ($indexType === 'unique') ? ['unique' => true] : []);
                     }

@@ -1,6 +1,7 @@
 <?php
 
 namespace EK\EVE\Api;
+use Illuminate\Support\Collection;
 
 abstract class ESIInterface
 {
@@ -8,7 +9,7 @@ abstract class ESIInterface
     protected string $esiEndpoint = '';
     protected string $userAgent = 'EVE-KILLBOARD/0.1 @ michael@karbowiak.dk';
 
-    public function fetch(string $endpoint): array
+    public function fetch(string $endpoint): Collection
     {
         $url = $this->esiUrl . $this->esiEndpoint . '/' . $endpoint . '/';
 
@@ -18,6 +19,6 @@ abstract class ESIInterface
         $result = curl_exec($ch);
         curl_close($ch);
 
-        return json_decode($result, true, flags: \JSON_THROW_ON_ERROR);
+        return collect(json_decode($result, true, flags: \JSON_THROW_ON_ERROR));
     }
 }

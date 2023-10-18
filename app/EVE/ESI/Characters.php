@@ -1,14 +1,19 @@
 <?php
 
 namespace EK\EVE\ESI;
+
 use EK\EVE\Api\ESIInterface;
+use Illuminate\Support\Collection;
 
 class Characters extends ESIInterface
 {
     protected string $esiEndpoint = 'characters';
 
-    public function getCharacterInfo(int $characterId): array
+    public function getCharacterInfo(int $characterId): Collection
     {
-        return $this->fetch($characterId);
+        $characterData = $this->fetch($characterId);
+        $characterData['characterID'] = $characterId;
+
+        return $characterData;
     }
 }

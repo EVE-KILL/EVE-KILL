@@ -4,16 +4,16 @@ namespace EK\Models;
 
 use EK\Database\Collection;
 
-class Killmails extends Collection
+class Factions extends Collection
 {
     /** @var string Name of collection in database */
-    public string $collectionName = 'killmails';
+    public string $collectionName = 'factions';
 
     /** @var string Name of database that the collection is stored in */
-    public string $databaseName = 'app';
+    public string $databaseName = 'ccp';
 
     /** @var string Primary index key */
-    public string $indexField = 'killID';
+    public string $indexField = 'corporationID';
 
     /** @var string[] $hiddenFields Fields to hide from output (ie. Password hash, email etc.) */
     public array $hiddenFields = [];
@@ -23,9 +23,6 @@ class Killmails extends Collection
 
     /** @var string[] $indexes The fields that should be indexed */
     public array $indexes = [
-        'unique' => [['killID', 'hash']],
-        'desc' => ['fetched'],
-        'asc' => [],
-        'text' => []
+        'unique' => ['corporationID'],
     ];
 }

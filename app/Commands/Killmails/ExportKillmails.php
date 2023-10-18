@@ -40,8 +40,8 @@ class ExportKillmails extends ConsoleCommand
             $killmails = $this->killmails->find([], [
                 'limit' => 1000000,
                 'skip' => $iterations * 1000000,
-                'sort' => ['killmail_id' => 1],
-                'projection' => ['_id' => 0, 'killmail_id' => 1, 'hash' => 1]
+                'sort' => ['killID' => 1],
+                'projection' => ['_id' => 0, 'killID' => 1, 'hash' => 1]
             ]);
             $this->out('.', false);
             $file = \BASE_DIR . '/resources/killmails-' . $iterations . '.json';
