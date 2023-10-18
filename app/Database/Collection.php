@@ -103,13 +103,9 @@ class Collection implements CollectionInterface
         }
     }
 
-    public function setData(array $data = [], bool $clear = false): void
+    public function setData(array $data = []): void
     {
-        if ($clear) {
-            $this->data = new IlluminateCollection();
-        }
-
-        $this->data = $this->data->merge($data);
+        $this->data = collect($data);
     }
 
     public function getData(): IlluminateCollection
@@ -126,6 +122,11 @@ class Collection implements CollectionInterface
     {
         // Does it have the required fiels?
         $this->hasRequired();
+
+        // Do we have an indexField? Otherwise throw an exception
+        if (empty($this->indexField)) {
+            throw new Exception('Error: indexField is empty. Cannot save data in class ' . get_class($this) . ' without an indexField.');
+        }
 
         try {
             return $this->collection->updateOne(

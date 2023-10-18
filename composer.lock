@@ -5397,12 +5397,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "320a7a68c2d9804c8aa64ed70fab7ea20b10cf3d"
+                "reference": "a4ba413fa5a4a938b21fc5705ae363ee79c479d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/320a7a68c2d9804c8aa64ed70fab7ea20b10cf3d",
-                "reference": "320a7a68c2d9804c8aa64ed70fab7ea20b10cf3d",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/a4ba413fa5a4a938b21fc5705ae363ee79c479d8",
+                "reference": "a4ba413fa5a4a938b21fc5705ae363ee79c479d8",
                 "shasum": ""
             },
             "conflict": {
@@ -6070,7 +6070,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-18T04:04:34+00:00"
+            "time": "2023-10-18T13:05:56+00:00"
         },
         {
             "name": "sebastian/cli-parser",

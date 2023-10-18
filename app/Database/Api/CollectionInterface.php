@@ -44,7 +44,7 @@ interface CollectionInterface
 
     public function truncate(): void;
 
-    public function setData(array $data = [], bool $clear = false): void;
+    public function setData(array $data = []): void;
 
     public function getData(): Collection;
 

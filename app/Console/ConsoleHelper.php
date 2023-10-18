@@ -409,12 +409,7 @@ class ConsoleHelper extends Command
     {
         $this->input = $input;
         $this->output = $output;
-        try {
-            $this->handle();
-            exit(0);
-        } catch (\Exception $e) {
-            $this->out($e->getMessage());
-            exit($e->getCode());
-        }
+        $this->handle();
+        exit(0);
     }
 }
