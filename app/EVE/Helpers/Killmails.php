@@ -150,14 +150,14 @@ class Killmails
     {
         $return = [];
 
-        foreach ($attackers as $data) {
+        foreach ($attackers as $attacker) {
             try {
-                $characterID = $data['character_id'] ?? 0;
-                $corporationID = $data['corporation_id'] ?? 0;
-                $allianceID = $data['alliance_id'] ?? 0;
-                $factionID = $data['faction_id'] ?? 0;
-                $weaponTypeID = $data['weapon_type_id'] ?? 0;
-                $shipTypeID = $data['ship_type_id'] ?? 0;
+                $characterID = $attacker['character_id'] ?? 0;
+                $corporationID = $attacker['corporation_id'] ?? 0;
+                $allianceID = $attacker['alliance_id'] ?? 0;
+                $factionID = $attacker['faction_id'] ?? 0;
+                $weaponTypeID = $attacker['weapon_type_id'] ?? 0;
+                $shipTypeID = $attacker['ship_type_id'] ?? 0;
                 $characterInfo = $characterID > 0 ? $this->characters->getById($characterID) : new Collection();
                 $corporationInfo = $corporationID > 0 ? $this->corporations->getById($corporationID) : new Collection();
                 $allianceInfo = $allianceID > 0 ? $this->alliances->getById($allianceID) : new Collection();
@@ -188,16 +188,16 @@ class Killmails
                     'factionID' => $factionID,
                     'factionName' => $factionID > 0 ? $factionInfo->get('factionName') : '',
                     'factionImageURL' => $this->imageServerUrl . '/alliances/' . $factionID . '/logo',
-                    'securityStatus' => $data['security_status'],
-                    'damageDone' => $data['damage_done'],
-                    'finalBlow' => $data['final_blow'],
+                    'securityStatus' => $attacker['security_status'],
+                    'damageDone' => $attacker['damage_done'],
+                    'finalBlow' => $attacker['final_blow'],
                     'weaponTypeID' => $weaponTypeID,
                     'weaponTypeName' => $weaponTypeName['en'],
                 ];
-                if ($data['damage_done'] === 0 || $totalDamage === 0) {
+                if ($attacker['damage_done'] === 0 || $totalDamage === 0) {
                     $inner['points'] = 0;
                 } else {
-                    $percentDamage = (int) $data['damage_done'] / $totalDamage;
+                    $percentDamage = (int) $attacker['damage_done'] / $totalDamage;
                     $points = ceil($pointValue * $percentDamage);
                     if ($points > 0) {
                         $inner['points'] = $points;
@@ -376,7 +376,7 @@ class Killmails
         return $celestialName;
     }
 
-    private function getDNA(array $killmail, $shipTypeID): string
+    private function getDNA(array $items, $shipTypeID): string
     {
         $slots = [
             'LoSlot0','LoSlot1','LoSlot2','LoSlot3','LoSlot4','LoSlot5','LoSlot6','LoSlot7','MedSlot0',
@@ -389,7 +389,7 @@ class Killmails
         $fittingArray = [];
         $fittingString = $shipTypeID . ':';
 
-        foreach ($killmail as $item) {
+        foreach ($items as $item) {
             $flagName = $this->invFlags->findOne(['flagID' => $item['flag']])->get('flagName');
             $categoryID = $item['category_id'] ?? 0;
             if ($categoryID === 8 || in_array($flagName, $slots, false)) {
@@ -453,5 +453,4 @@ class Killmails
 
         return $calc === 2;
     }
-
 }
