@@ -202,6 +202,11 @@ class Collection implements CollectionInterface
     public function handleIndexes(): void
     {
         foreach ($this->indexes as $indexType => $indexes) {
+            // If indexType is text, and there are multiple entries in the indexes array, we need to throw an exception, there can only be one text index
+            if ($indexType === 'text' && count($indexes) > 1) {
+                throw new Exception('Error: There can only be one text index in a collection, refer to https://www.mongodb.com/docs/manual/core/indexes/index-types/index-text/');
+            }
+
             foreach ($indexes as $index) {
                 if (is_array($index)) {
                     $modifier = ($indexType === 'desc') ? -1 : (($indexType === 'asc') ? 1 : (($indexType === 'unique') ? -1 : ($indexType === 'text' ? 'text' : null)));
@@ -210,13 +215,13 @@ class Collection implements CollectionInterface
                         foreach ($index as $key) {
                             $modifiedIndex[$key] = $modifier;
                         }
-                        $options = ($indexType === 'unique') ? ['unique' => true] : [];
+                        $options = ($indexType === 'unique') ? ['unique' => true] : ['sparse' => true];
                         $this->createIndex($modifiedIndex, $options);
                     }
                 } else {
                     $modifier = ($indexType === 'desc') ? -1 : (($indexType === 'asc') ? 1 : (($indexType === 'unique') ? -1 : ($indexType === 'text' ? 'text' : null)));
                     if ($modifier !== null) {
-                        $this->createIndex([$index => $modifier], ($indexType === 'unique') ? ['unique' => true] : []);
+                        $this->createIndex([$index => $modifier], ($indexType === 'unique') ? ['unique' => true] : ['sparse' => true]);
                     }
                 }
             }

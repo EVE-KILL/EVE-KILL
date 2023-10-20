@@ -23,9 +23,26 @@ class Killmails extends Collection
 
     /** @var string[] $indexes The fields that should be indexed */
     public array $indexes = [
-        'unique' => [['killID', 'hash']],
-        'desc' => ['fetched'],
-        'asc' => [],
+        'unique' => [
+            ['killID', 'hash']
+        ],
+        'desc' => [
+            'killTime', 'solarSystemID', 'solarSystemSecurity', 'regionID', 'victim.characterID', 'victim.corporationID',
+            'victim.allianceID', 'victim.factionID', 'victim.shipTypeID', 'victim.shipGroupID', 'victim.damageTaken',
+            'attackers.characterID', 'attackers.corporationID', 'attackers.allianceID', 'attackers.factionID',
+            'attackers.shipTypeID', 'attackers.shipGroupID', 'attackers.finalBlow', 'attackers.weaponTypeID',
+            'attackers.damageDone', 'items.typeID', 'items.groupID',
+            [ 'attackers.characterID', 'killTime' ],
+            [ 'attackers.corporationID', 'killTime' ],
+            [ 'attackers.allianceID', 'killTime' ],
+            [ 'attackers.shipTypeID', 'killTime' ],
+            [ 'attackers.weaponTypeID', 'killTime' ],
+            [ 'totalValue', 'killTime' ]
+        ],
+        'asc' => [
+            'killTime',
+            [ 'totalValue', 'killTime' ]
+        ],
         'text' => []
     ];
 }

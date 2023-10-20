@@ -28,6 +28,7 @@ class EnsureIndexes extends ConsoleCommand
         $finder->inNamespace('EK\Models');
 
         foreach ($finder as $className => $reflection) {
+            // @var \EK\Database\Collection $model
             $model = $this->container->get($className);
             $this->out('Ensuring indexes for ' . $className);
             $model->handleIndexes();

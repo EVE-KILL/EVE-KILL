@@ -33,6 +33,11 @@ class Prices extends Collection
 
     public function getPriceByTypeId(int $typeId, string $date = null): float
     {
+        // If the date is older than 2016-08-01, then we ain't got any market information on it..
+        if ($date <= '2016-08-01') {
+            $date = '2016-08-01';
+        }
+
         $date = $date === null ? new UTCDateTime(time() * 1000) : new UTCDateTime(strtotime($date) * 1000);
         $price = $this->findOne(['typeID' => $typeId, 'date' => $date]);
 

@@ -26,6 +26,8 @@ class Corporations extends Collection
     /** @var string[] $indexes The fields that should be indexed */
     public array $indexes = [
         'unique' => ['corporationID'],
+        'desc' => ['kills', 'losses', 'alliance_id', 'home_station_id', 'member_count'],
+        'text' => ['name']
     ];
 
     public function __construct(

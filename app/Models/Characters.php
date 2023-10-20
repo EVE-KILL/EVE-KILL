@@ -26,6 +26,8 @@ class Characters extends Collection
     /** @var string[] $indexes The fields that should be indexed */
     public array $indexes = [
         'unique' => ['characterID'],
+        'desc' => ['kills', 'losses', 'alliance_id', 'corporation_id'],
+        'text' => ['name']
     ];
 
     public function __construct(

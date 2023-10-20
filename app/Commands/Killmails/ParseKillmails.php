@@ -25,7 +25,25 @@ class ParseKillmails extends ConsoleCommand
     final public function handle(): void
     {
         if ($this->killID === null) {
-            // Loop over all the killmails, 1000 at a time, looking for the fetched = false flag, then call the parser pr. killmail
+            $unparsedCount = $this->killmails->count(['attackers' => ['$exists' => false]]);
+            $progressBar = $this->progressBar($unparsedCount);
+            $progressBar->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%\n");
+            $progressBar->setMessage('Parsing killmails');
+            $progressBar->start();
+
+            do {
+                $unparsedKillmails = $this->killmails->find(['attackers' => ['$exists' => false]], ['limit' => 1000]);
+
+                foreach($unparsedKillmails as $killmail) {
+                    $hash = $this->killmailsHelper->getKillMailHash($killmail['killID']);
+                    $parsedKillmail = $this->killmailsHelper->parseKillmail($killmail['killID'], $hash);
+
+                    $this->killmails->setData($parsedKillmail->toArray());
+                    $this->killmails->save();
+
+                    $progressBar->advance();
+                }
+            } while($unparsedKillmails->count() > 0);
         } else {
             $hash = $this->killmailsHelper->getKillMailHash($this->killID);
             $parsedKillmail = $this->killmailsHelper->parseKillmail($this->killID, $hash);
@@ -36,7 +54,6 @@ class ParseKillmails extends ConsoleCommand
 
             $this->killmails->setData($parsedKillmail->toArray());
             $this->killmails->save();
-
         }
     }
 }

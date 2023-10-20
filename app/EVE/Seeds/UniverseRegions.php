@@ -3,6 +3,8 @@
 namespace EK\EVE\Seeds;
 
 use EK\EVE\Api\SeedInterface;
+use EK\EVE\Helpers\Universe;
+use EK\EVE\Models\UniverseRegions as UniverseRegionsModel;
 use League\Container\Container;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Yaml\Yaml;
@@ -14,7 +16,8 @@ class UniverseRegions extends SeedInterface
 
     public function __construct(
         protected Container $container,
-        protected \EK\EVE\Models\UniverseRegions $regions
+        protected UniverseRegionsModel $regions,
+        protected Universe $universe
     ) {
 
     }
@@ -26,7 +29,7 @@ class UniverseRegions extends SeedInterface
             $data = Yaml::parseFile($location);
             $regionExp = array_values(array_slice(explode('/', $location), -3, 3, true));
             $data = array_merge([
-                'regionName' => $regionExp[1]
+                'regionName' => $this->universe->fixRegionNames($regionExp[1])
             ], $data);
 
             $this->regions->setData($data);

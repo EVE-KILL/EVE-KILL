@@ -26,6 +26,8 @@ class Alliances extends Collection
     /** @var string[] $indexes The fields that should be indexed */
     public array $indexes = [
         'unique' => ['allianceID'],
+        'desc' => ['creator_corporation_id', 'executor_corporation_id', 'kills', 'losses'],
+        'text' => ['name']
     ];
 
     public function __construct(

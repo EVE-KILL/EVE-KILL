@@ -3,6 +3,7 @@
 namespace EK\EVE\Seeds;
 
 use EK\EVE\Api\SeedInterface;
+use EK\EVE\Helpers\Universe;
 use League\Container\Container;
 use Symfony\Component\Console\Helper\ProgressBar;
 
@@ -13,7 +14,8 @@ class UniverseCelestials extends SeedInterface
 
     public function __construct(
         protected Container $container,
-        protected \EK\EVE\Models\UniverseCelestials $celestials
+        protected \EK\EVE\Models\UniverseCelestials $celestials,
+        protected Universe $universe
     ) {
 
     }
@@ -45,8 +47,9 @@ class UniverseCelestials extends SeedInterface
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 
+        $bigInsert = [];
         foreach($result as $celestial) {
-            $this->celestials->setData([
+            $bigInsert[] = [
                 'itemID' => (int) $celestial['itemID'],
                 'itemName' => $celestial['itemName'],
                 'typeName' => $celestial['typeName'],
@@ -55,15 +58,16 @@ class UniverseCelestials extends SeedInterface
                 'solarSystemID' => (int) $celestial['solarSystemID'],
                 'constellationID' => (int) $celestial['constellationID'],
                 'regionID' => (int) $celestial['regionID'],
-                'regionName' => ltrim(preg_replace('/(?<! )[A-Z]/', ' $0', $celestial['regionName'])),
+                'regionName' => $this->universe->fixRegionNames($celestial['regionName']),
                 'orbitID' => (int) $celestial['orbitID'],
                 'x' => (float) $celestial['x'],
                 'y' => (float) $celestial['y'],
                 'z' => (float) $celestial['z'],
-            ]);
-            $this->celestials->save();
+            ];
             $progressBar->advance();
         }
+        $this->celestials->setData($bigInsert);
+        $this->celestials->saveMany();
     }
 
     public function getItemCount(): int

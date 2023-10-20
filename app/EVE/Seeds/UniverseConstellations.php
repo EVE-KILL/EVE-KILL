@@ -3,18 +3,21 @@
 namespace EK\EVE\Seeds;
 
 use EK\EVE\Api\SeedInterface;
+use EK\EVE\Helpers\Universe;
+use EK\EVE\Models\UniverseConstellations as UniverseConstellationsModel;
 use League\Container\Container;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Yaml\Yaml;
 
-class UniverseConstallations extends SeedInterface
+class UniverseConstellations extends SeedInterface
 {
     public string $collectionName = 'constellations';
     public string $fileName = '';
 
     public function __construct(
         protected Container $container,
-        protected \EK\EVE\Models\UniverseConstellations $constellations
+        protected UniverseConstellationsModel $constellations,
+        protected Universe $universe
     ) {
 
     }
@@ -30,7 +33,7 @@ class UniverseConstallations extends SeedInterface
 
             $data = array_merge([
                 'regionID' => $regionData['regionID'],
-                'regionName' => $regionExp[1],
+                'regionName' => $this->universe->fixRegionNames($regionExp[1]),
                 'constellationName' => $regionExp[2],
                 'constellationID' => $constellationData['constellationID'],
             ], $data);

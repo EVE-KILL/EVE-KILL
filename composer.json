@@ -35,7 +35,8 @@
         "spiral/roadrunner-cli": "*",
         "spiral/roadrunner-http": "*",
         "symfony/yaml": "*",
-        "league/csv": "*"
+        "league/csv": "*",
+        "bandwidth-throttle/token-bucket": "*"
     },
     "require-dev": {
         "symfony/var-dumper": "*",

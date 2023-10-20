@@ -22,6 +22,8 @@ class UpdatePrices extends ConsoleCommand
     }
     final public function handle(): void
     {
+        ini_set('memory_limit', '-1');
+
         if ($this->historic === true) {
             $this->historicData();
             exit(0);
@@ -88,32 +90,58 @@ class UpdatePrices extends ConsoleCommand
         $this->out('<info>Importing Historic Data</info>');
         $years = array_merge(array_keys($historicDataBlobs), array_keys($historicHistoryByDay));
 
-        foreach($years as $year) {
+        foreach ($years as $year) {
             $this->out("Importing {$year}");
             $csvs = glob("{$cachePath}/markethistory/{$year}/*.csv");
-            foreach($csvs as $csv) {
-                $this->out("Importing {$csv}");
+            $bigInsert = [];
+
+            foreach ($csvs as $csv) {
                 $reader = Reader::createFromPath($csv);
                 $reader->setHeaderOffset(0);
                 $records = $reader->getRecords();
 
-                $bigInsert = [];
-                foreach($records as $record) {
+                foreach ($records as $record) {
                     $bigInsert[] = [
                         'typeID' => (int) $record['type_id'],
                         'average' => (float) $record['average'],
                         'highest' => (float) $record['highest'],
                         'lowest' => (float) $record['lowest'],
                         'regionID' => (int) $record['region_id'],
-                        'date' => new UTCDateTime(strtotime($record['date']) * 1000)
+                        'date' => new UTCDateTime(strtotime($record['date']) * 1000),
                     ];
                 }
-                try {
-                    $this->prices->collection->insertMany($bigInsert);
-                } catch (\Exception $e) {
-                    $this->out('Error: ' . $e->getMessage());
+            }
+
+            try {
+                $batchSize = 100000;
+                $totalRecords = count($bigInsert);
+                $index = 0;
+
+                // Create a spinner sequence
+                $spinner = ['/', '-', '\\', '|'];
+                $spinnerIndex = 0;
+
+                while ($index < $totalRecords) {
+                    $batch = array_slice($bigInsert, $index, $batchSize);
+                    $progressMessage = "Inserting batch $index - " . ($index + count($batch) - 1) . " of " . number_format($totalRecords) . " " . $spinner[$spinnerIndex];
+
+                    // Clear the line and print the updated message
+                    echo "\r" . str_pad($progressMessage, 80, " ");
+
+                    $this->prices->collection->insertMany($batch);
+                    $index += $batchSize;
+
+                    // Update the spinner
+                    $spinnerIndex = ($spinnerIndex + 1) % count($spinner);
+                    usleep(100000); // Sleep for 100ms (adjust as needed)
                 }
+
+                echo PHP_EOL; // Add a new line to separate the progress message from future output
+
+            } catch (\Exception $e) {
+                $this->out('Error: ' . $e->getMessage());
             }
         }
+
     }
 }
